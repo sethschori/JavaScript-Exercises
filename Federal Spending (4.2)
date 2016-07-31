@@ -1,0 +1,118 @@
+/*
+	FEDERAL AUDIT
+	
+Create a function that reads the dictionary of government spendings and returns a number representing the sum of total spending.
+	
+	ex)
+	
+	var spending = {
+		Military : {
+			Pensions : 1000000,
+			Nuclear_defense : 5000000,
+			Salaries : 10000000
+		},
+		Education : 4000000,
+		Healthcare : {
+			preventitive_care : 1500000,
+			emergency_care : 12000000
+		},
+		Social_Security : 15000000,
+		Infrastructure: 750000
+	}
+	
+	audit(spending) ---> 49250000
+	
+		***BONUS: instead of returning a number, return an object with the total and top-level area with maximum spending:
+	
+		audit(spending) --> {
+			total : 49250000
+			most_expensive : 'Military'
+		}
+		***
+*/
+
+var spending = {
+	Military : {
+		Pensions : 1000000,
+		Nuclear_defense : 5000000,
+		Salaries : 10000000
+	},
+	Education : 4000000,
+	Healthcare : {
+		preventitive_care : 1500000,
+		emergency_care : 12000000
+	},
+	Social_Security : 15000000,
+	Infrastructure: 750000
+}
+
+function audit(spending, passTotal) {
+	var outputObj = {};
+	var total = 0;
+	for (var keys in spending) {
+		var lineItem = spending[keys];
+		if (typeof lineItem !== "number") {
+			outputObj[keys] = audit(spending[keys], true);
+		} else {
+			outputObj[keys] = spending[keys];
+			total += lineItem;
+		}
+	}
+	if (passTotal) return total;
+	total = 0;
+	var mostExpensiveValue = 0;
+	var mostExpensiveItem = '';
+	for (var totals in outputObj) {
+		total += outputObj[totals];
+		if (outputObj[totals] > mostExpensiveValue) {
+			mostExpensiveValue = outputObj[totals];
+			mostExpensiveItem = totals;
+		}
+	}
+	outputObj.GRAND_TOTAL = total;
+	outputObj.most_expensive = mostExpensiveItem.replace('TOTAL_','');
+	return outputObj;
+}
+
+console.log(audit(spending));
+
+
+/* ===============================================================================
+
+Below is the instructor's (Will Jacobson's) solution to this exercise. 
+
+His solution is cleaner because he didn't use any flags (whereas I used 
+passTotal as a parameter for my audit function.
+
+=============================================================================== */
+
+
+function doIt(ob) {
+	var truth = { total: 0 };
+	for (var type in ob) {
+		if (typeof ob[type] === 'number') {
+			truth.total += ob[type];
+			truth[type] = ob[type];
+		} else {
+			var subTotal = doIt(ob[type]).total;
+			truth.total += subTotal;
+			truth[type] = subTotal;
+		}
+	}
+	
+	var mostExp;
+	var mostExpPrice = 0;
+	for (var key in truth) {
+		if (truth[key] > mostExpPrice && key !== 'total') {
+			mostExp = key;
+			mostExpPrice = truth[key];
+		}
+	}
+	
+	return {
+		total: truth.total,
+		most_expensive: mostExp
+	};
+}
+
+console.log(doIt(spending));
