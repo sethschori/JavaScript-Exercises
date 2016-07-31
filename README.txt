@@ -1,0 +1,1 @@
+This repository contains exercises that I completed in July 2016 during a Bootcamp Prep class which I took at Fullstack Academy.
